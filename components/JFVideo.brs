@@ -3,6 +3,7 @@ sub init()
     m.bufferCheckTimer = m.top.findNode("bufferCheckTimer")
     m.top.observeField("state", "onState")
     m.top.observeField("content", "onContentChange")
+    m.top.observeField("position", "onPositionChange")
 
     m.playbackTimer.observeField("fire", "ReportPlayback")
     m.bufferPercentage = 0 ' Track whether content is being loaded
@@ -30,9 +31,24 @@ sub init()
     m.hideNextEpisodeButtonAnimation = m.top.findNode("hideNextEpisodeButton")
 
     m.checkedForNextEpisode = false
+    m.hasNextEpisode = false
     m.getNextEpisodeTask = createObject("roSGNode", "GetNextEpisodeTask")
     m.getNextEpisodeTask.observeField("nextEpisodeData", "onNextEpisodeDataLoaded")
 
+    'Skip Intro Button
+    m.skipIntroButton = m.top.findNode("skipIntro")
+    m.skipIntroButton.text = tr("Skip Intro")
+    m.skipIntroButton.visible = false
+    m.skipIntroButton.setFocus(false)
+
+    m.showSkipIntroButtonAnimation = m.top.findNode("showSkipIntroButton")
+    m.hideSkipIntroButtonAnimation = m.top.findNode("hideSkipIntroButton")
+
+    m.checkedForIntro = false
+    m.hasIntro = false
+    m.introPassed = false
+    m.getIntroInfoTask = createObject("roSGNode", "GetIntroInfoTask")
+    m.getIntroInfoTask.observeField("introData", "onIntroDataLoaded")
     m.top.observeField("allowCaptions", "onAllowCaptionsChange")
 end sub
 
@@ -81,12 +97,27 @@ sub onContentChange()
 
     m.top.observeField("position", "onPositionChanged")
 
+    ' If video content type is not episode, clear the hasNextEpisode flag
+    if m.top.content.contenttype <> 4
+        m.hasNextEpisode = false
+    end if
 end sub
 
 sub onNextEpisodeDataLoaded()
     m.checkedForNextEpisode = true
-
+    m.hasNextEpisode = m.getNextEpisodeTask.nextEpisodeData.Items.count() = 2
     m.top.observeField("position", "onPositionChanged")
+end sub
+
+sub onIntroDataLoaded()
+    m.checkedForIntro = true
+
+    if m.getIntroInfoTask.introData.Valid
+        m.hasIntro = true
+        m.introPromptStartTime = m.getIntroInfoTask.introData.ShowSkipPromptAt
+        m.introPromptEndTime = m.getIntroInfoTask.introData.HideSkipPromptAt
+        m.introSkipTime = m.getIntroInfoTask.introData.IntroEnd
+    end if
 end sub
 
 '
@@ -142,13 +173,67 @@ sub onPositionChanged()
     ' Check if dialog is open
     m.dialog = m.top.getScene().findNode("dialogBackground")
     if not isValid(m.dialog)
-        checkTimeToDisplayNextEpisode()
+        if m.hasIntro and not m.introPassed
+            checkSkipIntroDisplay()
+        end if
+        if m.hasNextEpisode
+            checkTimeToDisplayNextEpisode()
+        end if
+    end if
+end sub
+
+' Show the Skip Intro button
+sub showSkipIntroButton()
+    if not m.skipIntroButton.visible
+        m.showSkipIntroButtonAnimation.control = "start"
+        m.skipIntroButton.setFocus(true)
+        m.skipIntroButton.visible = true
+    end if
+end sub
+
+' Hide the Skip Intro button
+sub hideSkipIntroButton()
+    if m.skipIntroButton.visible and m.hideSkipIntroButtonAnimation.state = "stopped"
+        m.hideSkipIntroButtonAnimation.control = "start"
+        m.hideSkipIntroButtonAnimation.observeField("state", "hideSkipIntroButtonFinished")
+        m.skipIntroButton.setFocus(false)
+        m.introPassed = true
+        m.top.setFocus(true)
+    end if
+end sub
+
+' Fully hide the Skip Intro button
+sub hideSkipIntroButtonFinished()
+    if m.hideSkipIntroButtonAnimation.state = "stopped"
+        m.skipIntroButton.visible = false
+        m.hideSkipIntroButtonAnimation.unobserveField("state")
+    end if
+end sub
+
+' Checks if we should display the Skip Intro button
+sub checkSkipIntroDisplay()
+    curPos = int(m.top.position)
+    if curPos >= m.introPromptStartTime and curPos <= m.introPromptEndTime and not m.skipIntroButton.visible
+        showSkipIntroButton()
+    else if curPos > m.introPromptEndTime and m.skipIntroButton.visible
+        hideSkipIntroButton()
+        m.introPassed = true
     end if
 end sub
 
 '
 ' When Video Player state changes
 sub onState(msg)
+    ' Check if there is an intro to skip when the state is buffering or playing
+    if m.top.state = "buffering" or m.top.state = "playing"
+        if isValid(m.top.videoID)
+            if m.top.videoID <> "" and not m.checkedForIntro and m.top.content.contenttype = 4
+                m.getIntroInfoTask.videoID = m.top.videoID
+                m.getIntroInfoTask.control = "RUN"
+            end if
+        end if
+    end if
+
     if isValid(m.captionTask)
         m.captionTask.playerState = m.top.state + m.top.globalCaptionMode
     end if
@@ -271,6 +356,19 @@ function onKeyEvent(key as string, press as boolean) as boolean
         if m.nextEpisodeButton.visible or m.nextEpisodeButton.hasFocus()
             m.nextEpisodeButton.visible = false
             m.nextEpisodeButton.setFocus(false)
+            m.top.setFocus(true)
+        end if
+    end if
+
+    if key = "OK" and m.skipIntroButton.hasfocus() and not m.top.trickPlayBar.visible
+        m.top.seek = m.introSkipTime
+        hideSkipIntroButton()
+        return true
+    else
+        'Hide Skip Intro Button
+        if m.skipIntroButton.visible or m.skipIntroButton.hasFocus()
+            m.skipIntroButton.visible = false
+            m.skipIntroButton.setFocus(false)
             m.top.setFocus(true)
         end if
     end if
