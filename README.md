@@ -1,43 +1,10 @@
 <p>
-    <h1 style="text-align: center;">Jellyfin app for Roku</h1>
-    <h3 style="text-align: center;">Part of the <a href="https://jellyfin.media/">Jellyfin</a> Project</h3>
+    <h1 style="text-align: center;">Jellyfin app for Roku with Intro Skip Support</h1>
+    <h3 style="text-align: center;">Forked from the <a href="https://jellyfin.media/">Jellyfin</a> Project</h3>
 </p>
 
-<p align="center">
-<img alt="Logo banner" src="https://raw.githubusercontent.com/jellyfin/jellyfin-ux/master/branding/SVG/banner-logo-solid.svg?sanitize=true"/>
-<br/><br/>
-<a href="https://github.com/jellyfin/jellyfin-roku">
-<img alt="GPL 2.0 License" src="https://img.shields.io/github/license/jellyfin/jellyfin-roku.svg"/>
-</a>
-<a href="https://github.com/jellyfin/jellyfin-roku/releases">
-<img alt="Current Release" src="https://img.shields.io/github/release/jellyfin/jellyfin-roku.svg"/>
-</a>
-<a href="https://translate.jellyfin.org/projects/jellyfin/jellyfin-roku/?utm_source=widget">
-<img src="https://translate.jellyfin.org/widgets/jellyfin/-/jellyfin-roku/svg-badge.svg" alt="Translation status" />
-</a>
-<br/>
-<a href="https://matrix.to/#/+jellyfin:matrix.org">
-<img alt="Chat on Matrix" src="https://img.shields.io/matrix/jellyfin:matrix.org.svg?logo=matrix"/>
-</a>
-<a href="https://www.reddit.com/r/jellyfin">
-<img alt="Join our Subreddit" src="https://img.shields.io/badge/reddit-r%2Fjellyfin-%23FF5700.svg"/>
-</a>
-</p>
-
-The Jellyfin Roku App is a Jellyfin client for Roku Devices.  This is still very much a work in progress, so we would encourage you to [get involved](#get_involved) if you can.
-
-
+The Jellyfin Roku with Intro Skip App is a Jellyfin client for Roku Devices. This is an **unofficial** fork of the [Jellyfin Roku App](https://github.com/jellyfin/jellyfin-roku) which is meant to work with the [Intro-Skipper Jellyfin Plugin](https://github.com/ConfusedPolarBear/intro-skipper). This fork will be maintained until introduction skipping is pulled into the official Jellyfin core.
 
 ## Getting Started
 
-The channel is available on the [Roku Channel Store](https://my.roku.com/add/jellyfin).
-
-## Getting Involved<a name="get_involved"></a>
-
-No matter what your interests or skill are, you can help to make this client better for everyone by simply using the client and letting us know if you find a problem with it.   Either give us a shout on [matrix](https://matrix.to/#/+jellyfin:matrix.org) or create a github issue.
-
-Feature requests are always welcome too, but please have a read though the existing issues to see if someone has already raised one for something similar.
-
-If you fancy some development, then read the [DEVGUIDE](DEVGUIDE.md) to find out the best ways to help.
-
-As Roku have severely limited their Beta channel programme, the best way to test pre-release versions is by following the [DEVGUIDE](DEVGUIDE.md) to install and test the latest changes.  Feedback is always welcome.
+This app is not available on the Roku Channel Store (the official Jellyfin app on the Channel Store does not support intro skipping at this time). To install this app, your Roku must be in [Developer Mode](https://developer.roku.com/docs/developer-program/getting-started/developer-setup.md). Then you can download the latest release and upload it to your Roku. More instructions are in the [DEVGUIDE](DEVGUIDE.md).
