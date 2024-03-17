@@ -1,0 +1,11 @@
+import "pkg:/source/api/baserequest.bs"
+
+sub init()
+    m.top.functionName = "getIntroInfoTask"
+end sub
+
+sub getIntroInfoTask()
+    req = APIRequest(Substitute("/episode/{0}/introtimestamps", m.top.videoID), {})
+    m.introData = getJson(req)
+    m.top.introData = m.introData
+end sub

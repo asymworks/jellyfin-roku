@@ -27,6 +27,10 @@
     <field id="fullAudioData" type="array" />
     <field id="audioIndex" type="integer" />
     <field id="allowCaptions" type="boolean" value="false" />
+
+    <field id="introPromptStartTime" type="integer" />
+    <field id="introPromptEndTime" type="integer" />
+    <field id="introSkipTime" type="integer" />
   </interface>
 
   <children>
@@ -48,6 +52,16 @@
     </Animation>
     <Animation id="hideNextEpisodeButton" duration=".25" repeat="false" easeFunction="inQuad">
       <FloatFieldInterpolator key="[0.0, 1.0]" keyValue="[.9, 0]" fieldToInterp="nextEpisode.opacity" />
+    </Animation>
+
+    <!--note that nextEpisode and skipIntro have the same translation, but since they are shown at opposite ends of an episode, they should not conflict-->
+    <JFButton id="skipIntro" opacity="0" textColor="#f0f0f0" focusedTextColor="#202020" focusFootprintBitmapUri="pkg:/images/option-menu-bg.9.png" focusBitmapUri="pkg:/images/white.9.png" translation="[1500, 900]" />
+    <!--animation for the skip introduction button-->
+    <Animation id="showSkipIntroButton" duration="1.0" repeat="false" easeFunction="inQuad">
+      <FloatFieldInterpolator key="[0.0, 1.0]" keyValue="[0.0, .9]" fieldToInterp="skipIntro.opacity" />
+    </Animation>
+    <Animation id="hideSkipIntroButton" duration=".2" repeat="false" easeFunction="inQuad">
+      <FloatFieldInterpolator key="[0.0, 1.0]" keyValue="[.9, 0]" fieldToInterp="skipIntro.opacity" />
     </Animation>
   </children>
 </component>
